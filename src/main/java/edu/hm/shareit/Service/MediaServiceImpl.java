@@ -26,12 +26,13 @@ public class MediaServiceImpl implements IMediaService {
 
 	@Override
 	public MediaServiceResult addBook(Book book) {
-		if (book == null || book.getAuthor().isEmpty() || book.getTitle().isEmpty()) {
+		if (book == null || book.getAuthor() == null || book.getAuthor().isEmpty() || book.getTitle() == null
+				|| book.getTitle().isEmpty()) {
 			return MediaServiceResult.BOOK_DATA_INCOMPLETE;
-		} else if (this.books.get(book.getIsbn()) != null) {
-			return MediaServiceResult.ISBN_DUPLICATED;
 		} else if (book.getIsbn() == null || book.getIsbn().isEmpty() || !this.checkISBN(book.getIsbn())) {
 			return MediaServiceResult.ISBN_INVALID;
+		} else if (this.books.get(book.getIsbn()) != null) {
+			return MediaServiceResult.ISBN_DUPLICATED;
 		}
 
 		this.books.put(book.getIsbn(), book);
@@ -84,7 +85,7 @@ public class MediaServiceImpl implements IMediaService {
 			return MediaServiceResult.BOOK_DATA_INCOMPLETE;
 		} else {
 			this.books.put(isbn, book);
-			
+
 			return MediaServiceResult.OK;
 		}
 	}
@@ -93,13 +94,13 @@ public class MediaServiceImpl implements IMediaService {
 	public MediaServiceResult updateDisc(Disc disc, String barcode) {
 		if (this.discs.get(disc.getBarcode()) == null) {
 			return MediaServiceResult.BARCODE_NOT_FOUND;
-		} else if (disc.getBarcode().replaceAll("[^0-9]", "") != barcode.replaceAll("[^0-9]", "")) {
+		} else if (!disc.getBarcode().replaceAll("[^0-9]", "").equals(barcode.replaceAll("[^0-9]", ""))) {
 			return MediaServiceResult.BARCODE_CONFLICT;
 		} else if (disc.getDirector().isEmpty() || disc.getTitle().isEmpty() || disc.getFsk() < 0) {
 			return MediaServiceResult.DISC_DATA_INCOMPLETE;
 		} else {
 			this.discs.put(barcode, disc);
-			
+
 			return MediaServiceResult.OK;
 		}
 	}

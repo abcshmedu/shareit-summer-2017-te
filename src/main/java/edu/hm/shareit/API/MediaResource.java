@@ -33,7 +33,6 @@ import edu.hm.shareit.result.MediaServiceResult;
 public class MediaResource {
 
 	private IMediaService service;
-	// private MediaServiceImpl service;
 
 	public MediaResource() {
 		this.service = new MediaServiceImpl();
@@ -43,24 +42,32 @@ public class MediaResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getBooks() {
+		Response result;
+
 		try {
 			Medium[] books = this.service.getBooks();
-			return Response.ok(new Gson().toJson(books), MediaType.APPLICATION_JSON).build();
+			result = Response.ok(new Gson().toJson(books), MediaType.APPLICATION_JSON).build();
 		} catch (Exception exception) {
-			return Response.serverError().build();
+			result = Response.serverError().build();
 		}
+
+		return result;
 	}
-	
+
 	@Path("discs")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDiscs() {
+		Response result;
+
 		try {
 			Medium[] discs = this.service.getDiscs();
-			return Response.ok(new Gson().toJson(discs), MediaType.APPLICATION_JSON).build();
+			result = Response.ok(new Gson().toJson(discs), MediaType.APPLICATION_JSON).build();
 		} catch (Exception exception) {
-			return Response.serverError().build();
+			result = Response.serverError().build();
 		}
+
+		return result;
 	}
 
 	@Path("books")
@@ -69,6 +76,7 @@ public class MediaResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createBook(Book book) {
 		Response result;
+
 		try {
 			MediaServiceResult msr = this.service.addBook(book);
 			if (msr.getCode() == 200) {
@@ -84,13 +92,14 @@ public class MediaResource {
 
 		return result;
 	}
-	
+
 	@Path("discs")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createDisc(Disc disc) {
 		Response result;
+
 		try {
 			MediaServiceResult msr = this.service.addDisc(disc);
 			if (msr.getCode() == 200) {
@@ -123,9 +132,8 @@ public class MediaResource {
 		}
 
 		return result;
-
 	}
-	
+
 	@Path("discs/{barcode}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -167,7 +175,7 @@ public class MediaResource {
 
 		return result;
 	}
-	
+
 	@Path("/discs/{barcode}")
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
