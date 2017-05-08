@@ -8,19 +8,32 @@ package edu.hm.shareit.DTO;
  */
 public class Copy {
 
-	private Medium medium;
-	private String owner;
+    private Medium medium;
+    private String owner;
 
-	public Copy(String owner, Medium medium) {
-		this.medium = medium;
-		this.owner = owner;
-	}
+    /**
+     * Default constructor.
+     * @param owner owner.
+     * @param medium medium.
+     */
+    public Copy(String owner, Medium medium) {
+        this.medium = medium;
+        this.owner = owner;
+    }
 
-	public Medium getMedium() {
-		return this.medium;
-	}
+    /**
+     * Returns medium.
+     * @return medium.
+     */
+    public Medium getMedium() {
+        return this.medium;
+    }
 
-	public String getOwner() {
-		return this.owner;
-	}
+    /**
+     * Returns owner.
+     * @return owner.
+     */
+    public String getOwner() {
+        return this.owner;
+    }
 }

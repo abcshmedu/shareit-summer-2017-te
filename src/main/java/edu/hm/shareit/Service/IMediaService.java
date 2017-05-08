@@ -12,17 +12,81 @@ import edu.hm.shareit.result.MediaServiceResult;
  *
  */
 public interface IMediaService {
-	
-	public MediaServiceResult addBook(Book book);	
-	public MediaServiceResult addDisc(Disc disc);
-	
-	public Medium[] getBooks();
-	public Medium[] getDiscs();
-	
-	public Medium getBookByISBN(String isbn);
-	public Medium getDiscByBarcode(String barcode);
-	
-	public MediaServiceResult updateBook(Book book, String isbn);	
-	public MediaServiceResult updateDisc(Disc disc, String barcode);
-	
+
+    /**
+     * Adds a Book to the database.
+     * 
+     * @param book
+     *            Book object.
+     * @return Status code 200 if successful. Code 400 if failed and json object
+     *         with error message as "detail" property.
+     */
+    MediaServiceResult addBook(Book book);
+
+    /**
+     * Adds a Disc to the database.
+     * 
+     * @param disc
+     *            Disc object.
+     * @return Status code 200 if successful. Code 400 if failed and json object
+     *         with error message as "detail" property.
+     */
+    MediaServiceResult addDisc(Disc disc);
+
+    /**
+     * Lists all books.
+     * 
+     * @return Array of Books.
+     */
+    Medium[] getBooks();
+
+    /**
+     * Lists all discs.
+     * 
+     * @return Array of discs.
+     */
+    Medium[] getDiscs();
+
+    /**
+     * Returns a Book object by given isbn.
+     * 
+     * @param isbn
+     *            of a Book.
+     * @return Book object.
+     */
+    Medium getBookByISBN(String isbn);
+
+    /**
+     * Returns a Disc object by given barcode.
+     * 
+     * @param barcode
+     *            of a disc.
+     * @return Disc object.
+     */
+    Medium getDiscByBarcode(String barcode);
+
+    /**
+     * Updates a Book by given isbn.
+     * 
+     * @param book
+     *            Book object with new data.
+     * @param isbn
+     *            of existing Book.
+     * @return Status code 200 if successful. Code 400 if failed and json object
+     *         with error message as "detail" property.
+     */
+    MediaServiceResult updateBook(Book book, String isbn);
+
+    /**
+     * Updates a Disc by given barcode.
+     * 
+     * @param disc
+     *            Disc object with new data.
+     * @param barcode
+     *            of existing Disc.
+     * @return Status code 200 if successful. Code 400 if failed and json object
+     *         with error message as "detail" property.
+     */
+    MediaServiceResult updateDisc(Disc disc, String barcode);
+
 }

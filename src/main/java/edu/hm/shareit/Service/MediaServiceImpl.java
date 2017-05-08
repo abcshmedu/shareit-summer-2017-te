@@ -16,125 +16,145 @@ import edu.hm.shareit.result.MediaServiceResult;
  */
 public class MediaServiceImpl implements IMediaService {
 
-	private Map<String, Book> books;
-	private Map<String, Disc> discs;
+    private Map<String, Book> books;
+    private Map<String, Disc> discs;
 
-	public MediaServiceImpl() {
-		this.books = new HashMap<>();
-		this.discs = new HashMap<>();
-	}
+    private final int barcodeLength = 13;
+    private final int isbnLength = 13;
 
-	@Override
-	public MediaServiceResult addBook(Book book) {
-		if (book == null || book.getAuthor() == null || book.getAuthor().isEmpty() || book.getTitle() == null
-				|| book.getTitle().isEmpty()) {
-			return MediaServiceResult.BOOK_DATA_INCOMPLETE;
-		} else if (book.getIsbn() == null || book.getIsbn().isEmpty() || !this.checkISBN(book.getIsbn())) {
-			return MediaServiceResult.ISBN_INVALID;
-		} else if (this.books.get(book.getIsbn()) != null) {
-			return MediaServiceResult.ISBN_DUPLICATED;
-		}
+    /**
+     * Default constructor.
+     */
+    public MediaServiceImpl() {
+        this.books = new HashMap<>();
+        this.discs = new HashMap<>();
+    }
 
-		this.books.put(book.getIsbn(), book);
+    @Override
+    public MediaServiceResult addBook(Book book) {
+        if (book == null || book.getAuthor() == null || book.getAuthor().isEmpty() || book.getTitle() == null
+                || book.getTitle().isEmpty()) {
+            return MediaServiceResult.BOOK_DATA_INCOMPLETE;
+        } else if (book.getIsbn() == null || book.getIsbn().isEmpty() || !this.checkISBN(book.getIsbn())) {
+            return MediaServiceResult.ISBN_INVALID;
+        } else if (this.books.get(book.getIsbn()) != null) {
+            return MediaServiceResult.ISBN_DUPLICATED;
+        }
 
-		return MediaServiceResult.OK;
-	}
+        this.books.put(book.getIsbn(), book);
 
-	@Override
-	public MediaServiceResult addDisc(Disc disc) {
-		if (disc == null || disc.getDirector().isEmpty() || disc.getTitle().isEmpty() || disc.getFsk() < 0) {
-			return MediaServiceResult.DISC_DATA_INCOMPLETE;
-		} else if (this.discs.get(disc.getBarcode()) != null) {
-			return MediaServiceResult.BARCODE_DUPLICATED;
-		} else if (disc.getBarcode() == null || disc.getBarcode().length() != 13) {
-			return MediaServiceResult.BARCODE_INVALID;
-		}
+        return MediaServiceResult.OK;
+    }
 
-		this.discs.put(disc.getBarcode(), disc);
+    @Override
+    public MediaServiceResult addDisc(Disc disc) {
+        if (disc == null || disc.getDirector().isEmpty() || disc.getTitle().isEmpty() || disc.getFsk() < 0) {
+            return MediaServiceResult.DISC_DATA_INCOMPLETE;
+        } else if (this.discs.get(disc.getBarcode()) != null) {
+            return MediaServiceResult.BARCODE_DUPLICATED;
+        } else if (disc.getBarcode() == null || disc.getBarcode().length() != this.barcodeLength) {
+            return MediaServiceResult.BARCODE_INVALID;
+        }
 
-		return MediaServiceResult.OK;
-	}
+        this.discs.put(disc.getBarcode(), disc);
 
-	@Override
-	public Medium[] getBooks() {
-		return this.books.values().toArray(new Medium[0]);
-	}
+        return MediaServiceResult.OK;
+    }
 
-	@Override
-	public Medium[] getDiscs() {
-		return this.discs.values().toArray(new Medium[0]);
-	}
+    @Override
+    public Medium[] getBooks() {
+        return this.books.values().toArray(new Medium[0]);
+    }
 
-	@Override
-	public Medium getBookByISBN(String isbn) {
-		return this.books.get(isbn);
-	}
+    @Override
+    public Medium[] getDiscs() {
+        return this.discs.values().toArray(new Medium[0]);
+    }
 
-	@Override
-	public Medium getDiscByBarcode(String barcode) {
-		return this.discs.get(barcode);
-	}
+    @Override
+    public Medium getBookByISBN(String isbn) {
+        if (isbn != null) {
+            return this.books.get(isbn);
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public MediaServiceResult updateBook(Book book, String isbn) {
-		if (this.books.get(book.getIsbn()) == null) {
-			return MediaServiceResult.ISBN_NOT_FOUND;
-		} else if (!book.getIsbn().replaceAll("[^0-9]", "").equals(isbn.replaceAll("[^0-9]", ""))) {
-			return MediaServiceResult.ISBN_CONFLICT;
-		} else if (book.getAuthor().isEmpty() || book.getTitle().isEmpty()) {
-			return MediaServiceResult.BOOK_DATA_INCOMPLETE;
-		} else {
-			this.books.put(isbn, book);
+    @Override
+    public Medium getDiscByBarcode(String barcode) {
+        if (barcode != null) {
+            return this.discs.get(barcode);
+        } else {
+            return null;
+        }
+    }
 
-			return MediaServiceResult.OK;
-		}
-	}
+    @Override
+    public MediaServiceResult updateBook(Book book, String isbn) {
+        if (this.books.get(book.getIsbn()) == null) {
+            return MediaServiceResult.ISBN_NOT_FOUND;
+        } else if (!book.getIsbn().replaceAll("[^0-9]", "").equals(isbn.replaceAll("[^0-9]", ""))) {
+            return MediaServiceResult.ISBN_CONFLICT;
+        } else if (book.getAuthor().isEmpty() || book.getTitle().isEmpty()) {
+            return MediaServiceResult.BOOK_DATA_INCOMPLETE;
+        } else {
+            this.books.put(isbn, book);
 
-	@Override
-	public MediaServiceResult updateDisc(Disc disc, String barcode) {
-		if (this.discs.get(disc.getBarcode()) == null) {
-			return MediaServiceResult.BARCODE_NOT_FOUND;
-		} else if (!disc.getBarcode().replaceAll("[^0-9]", "").equals(barcode.replaceAll("[^0-9]", ""))) {
-			return MediaServiceResult.BARCODE_CONFLICT;
-		} else if (disc.getDirector().isEmpty() || disc.getTitle().isEmpty() || disc.getFsk() < 0) {
-			return MediaServiceResult.DISC_DATA_INCOMPLETE;
-		} else {
-			this.discs.put(barcode, disc);
+            return MediaServiceResult.OK;
+        }
+    }
 
-			return MediaServiceResult.OK;
-		}
-	}
+    @Override
+    public MediaServiceResult updateDisc(Disc disc, String barcode) {
+        if (this.discs.get(disc.getBarcode()) == null) {
+            return MediaServiceResult.BARCODE_NOT_FOUND;
+        } else if (!disc.getBarcode().replaceAll("[^0-9]", "").equals(barcode.replaceAll("[^0-9]", ""))) {
+            return MediaServiceResult.BARCODE_CONFLICT;
+        } else if (disc.getDirector().isEmpty() || disc.getTitle().isEmpty() || disc.getFsk() < 0) {
+            return MediaServiceResult.DISC_DATA_INCOMPLETE;
+        } else {
+            this.discs.put(barcode, disc);
 
-	private Boolean checkISBN(String isbn) {
-		Boolean result = false;
-		// isbn = isbn.replace("-", "").replace(" ", "");
-		isbn = isbn.replaceAll("[^0-9]", "");
-		long num;
+            return MediaServiceResult.OK;
+        }
+    }
 
-		try {
-			num = Long.parseLong(isbn);
-			// num = Integer.valueOf(isbn);
-		} catch (NumberFormatException e) {
-			return result;
-		}
+    /**
+     * Check whether isbn is correct or not.
+     * 
+     * @param isbn
+     *            to check.
+     * @return true if isbn was correct.
+     */
+    private Boolean checkISBN(String isbn) {
+        Boolean result = false;
+        final int mult = 3;
+        final int mod = 10;
+        isbn = isbn.replaceAll("[^0-9]", "");
 
-		if (isbn.isEmpty() || isbn.length() != 13) {
-			return result;
-		}
+        try {
+            Long.parseLong(isbn);
+        } catch (NumberFormatException e) {
+            return result;
+        }
 
-		char[] numbers = isbn.toCharArray();
-		int checkSum = 0;
-		for (int i = 0; i < numbers.length - 1; i++) {
-			if (i % 2 == 0) {
-				checkSum += Character.getNumericValue(numbers[i]);
-			} else {
-				checkSum += Character.getNumericValue(numbers[i]) * 3;
-			}
-		}
-		if ((10 - (checkSum % 10)) == Character.getNumericValue(numbers[numbers.length - 1])) {
-			result = true;
-		}
+        if (isbn.isEmpty() || isbn.length() != this.isbnLength) {
+            return result;
+        }
 
-		return result;
-	}
+        char[] numbers = isbn.toCharArray();
+        int checkSum = 0;
+        for (int i = 0; i < numbers.length - 1; i++) {
+            if (i % 2 == 0) {
+                checkSum += Character.getNumericValue(numbers[i]);
+            } else {
+                checkSum += Character.getNumericValue(numbers[i]) * mult;
+            }
+        }
+        if ((mod - (checkSum % mod)) == Character.getNumericValue(numbers[numbers.length - 1])) {
+            result = true;
+        }
+
+        return result;
+    }
 }
