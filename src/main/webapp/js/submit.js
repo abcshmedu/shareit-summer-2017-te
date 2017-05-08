@@ -36,6 +36,34 @@ var submitNewBook = function() {
         });
 }
 
+var updateBook = function() {
+	var json = JSON.stringify({
+			title: $("input[name=title]").val(),
+			author: $("input[name=author]").val(),
+			isbn: $("input[name=isbn]").val()
+	});
+	var errorText = $("#errormessage");
+    $.ajax({
+        url: '/shareit/media/books/' + $("input[name=isbn]").val(),
+        type:'PUT',
+        contentType: 'application/json; charset=UTF-8',
+        data: json
+        })
+        .done(() => {
+			$("input[name=title]").val("");
+			$("input[name=author]").val("");
+			$("input[name=isbn]").val("");
+        	
+        	errorText.removeClass("visible");
+        	errorText.addClass("hidden");
+        })
+        .fail((error) => {
+        	errorText.addClass("visible");
+        	errorText.text(error.responseJSON.detail);
+        	errorText.removeClass("hidden");
+        });
+}
+
 /**
  * Creates a list of all books using a Mustache-template.
  */
